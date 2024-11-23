@@ -1,10 +1,23 @@
-export FLASK_ENV=development
 export FLASK_APP=app
+export FLASK_ENV=development 
 
-set FLASK_ENV=development
-set FLASK_APP=app 
+export FLASK_APP=src
+export FLASK_ENV=development
+
 
 flask run
 
+** every time we open a new terminal, we need to do 
+export FLASK_APP=src
+export FLASK_ENV=development
 
+for flask run to work 
+
+so we build .flaskenv 
+
+.flaskenv file is used to configure environment variables for Flask when using the flask CLI
+
+in .flaskenv
+FLASK_APP=src
+FLASK_ENV=development
 
