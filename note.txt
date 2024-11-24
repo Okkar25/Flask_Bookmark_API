@@ -21,3 +21,62 @@ in .flaskenv
 FLASK_APP=src
 FLASK_ENV=development
 
+
+
+bookmarks = db.relationship("Bookmark", backref="user", lazy=True)
+
+backref="user": Automatically creates a user attribute in the Bookmark model to access the associated user.
+lazy=True: Loads related bookmarks when accessed.
+
+
+flask shell 
+
+>>> string.ascii_letters 
+'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+>>> string.digits
+'0123456789'
+
+
+bookmark = Bookmark(url="https://example.com", body="Example", user_id=1)
+
+**kwargs will be:
+{
+    "url": "https://example.com",
+    "body": "Example",
+    "user_id": 1
+}
+
+
+def generate_short_characters(self):
+    characters = string.digits + string.ascii_letters
+    SHORT_URL_LENGTH = 6
+    picked_chars = "".join(random.choices(characters, k=SHORT_URL_LENGTH))
+
+    link = self.query.filter_by(short_url=picked_chars).first()
+
+    if link:
+        self.generate_short_characters()
+    else:
+        return picked_chars
+
+
+ def generate_short_characters(self):
+    characters = string.digits + string.ascii_letters
+    while True:
+        picked_chars = "".join(random.choices(characters, k=6))
+        if not self.query.filter_by(short_url=picked_chars).first():
+            return picked_chars
+
+
+## in flask shell 
+
+from src.database import db
+
+db.create_all()
+
+db 
+
+to delete => db.drop_all()
+
+

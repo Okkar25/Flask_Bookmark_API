@@ -1,3 +1,10 @@
 {
-  "cSpell.words": ["flaskenv", "jsonify", "pycache"]
+  "cSpell.words": [
+    "backref",
+    "flaskenv",
+    "jsonify",
+    "kwargs",
+    "onupdate",
+    "pycache"
+  ]
 }
