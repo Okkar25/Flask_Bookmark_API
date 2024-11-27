@@ -26,7 +26,7 @@ class Bookmark(db.Model):
     url = db.Column(db.Text, nullable=False)
     short_url = db.Column(db.String(6), nullable=False)
     visits = db.Column(db.Integer, default=0)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))  # user = User()
     created_at = db.Column(db.DateTime, default=datetime.now())
     updated_at = db.Column(db.DateTime, onupdate=datetime.now())
 
@@ -45,6 +45,9 @@ class Bookmark(db.Model):
 
         while True:
             picked_chars = "".join(random.choices(characters, k=SHORT_URL_LENGTH))
+
+            # Check if the short URL is unique
+            # checking if the generated short_url already exist in database
             if not self.query.filter_by(short_url=picked_chars).first():
                 return picked_chars
 
@@ -56,3 +59,6 @@ class Bookmark(db.Model):
 
     def __repr__(self) -> str:
         return f"Bookmark >>> {self.url}"
+
+
+# Foreign Key => Primary Key

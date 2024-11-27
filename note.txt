@@ -69,6 +69,23 @@ def generate_short_characters(self):
             return picked_chars
 
 
+*** one-to-many relationship ***
+bookmarks = db.relationship("Bookmark", backref="user", lazy=True)
+
+
+
+user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+
+while True:
+    picked_chars = "".join(random.choices(characters, k=SHORT_URL_LENGTH))
+
+    # Check if the short URL is unique
+    # checking if the generated short_url already exist in database
+    if not self.query.filter_by(short_url=picked_chars).first():
+
+
+
 ## in flask shell 
 
 from src.database import db
@@ -78,5 +95,64 @@ db.create_all()
 db 
 
 to delete => db.drop_all()
+
+
+
+-----------------------------------------------------------------------------------------------------
+
+
+
+*** one-to-many relationship ***
+bookmarks = db.relationship("Bookmark", backref="user", lazy=True)
+
+
+db.relationship("Bookmark")
+A user can have many bookmarks. This is the "one-to-many" part of the relationship.
+
+backref="user"
+Automatically adds a reference from the Bookmark model back to the User model.
+In other words, each Bookmark object will have an attribute .user that refers to the associated User object.
+This simplifies queries like bookmark.user to get the user who created the bookmark.
+
+lazy=True:
+Controls how related data is loaded.
+When set to True, it uses lazy loading: SQLAlchemy will only load the related bookmarks from the database when they are accessed. This helps reduce unnecessary database queries.
+
+
+# Access bookmarks of a user
+user = User.query.get(1)
+print(user.bookmarks)  # A list of Bookmark objects
+
+# Access the user of a bookmark
+bookmark = Bookmark.query.get(1)
+print(bookmark.user)  # A User object
+
+
+
+user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+db.ForeignKey("user.id"):
+Specifies that the value in the user_id column must match a valid id from the User table.
+
+
+# Create a user and their bookmark
+user = User(username="john_doe", email="john@example.com", password="password123")
+db.session.add(user)
+db.session.commit()
+
+bookmark = Bookmark(body="A great resource", url="http://example.com", short_url="abc123", user_id=user.id)
+db.session.add(bookmark)
+db.session.commit()
+
+# Access the bookmark's user
+print(bookmark.user)  # <User >>> john_doe>
+
+# Access the user's bookmarks
+print(user.bookmarks)  # [<Bookmark id=1>]
+
+
+A ***ForeignKey ***  is a column in a database table that creates a link between two tables. 
+Its main purpose is to establish a relationship between the rows of one table and the rows of another table.
+In simple terms, a foreign key in one table refers to the primary key in another table.
 
 
