@@ -5,6 +5,7 @@
     "jsonify",
     "kwargs",
     "onupdate",
-    "pycache"
+    "pycache",
+    "werkzeug"
   ]
 }

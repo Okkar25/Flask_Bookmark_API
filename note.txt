@@ -156,3 +156,13 @@ Its main purpose is to establish a relationship between the rows of one table an
 In simple terms, a foreign key in one table refers to the primary key in another table.
 
 
+-----------------------------------------------------------------------------------------------------------------------------------
+
+
+from werkzeug.security import check_password_hash, generate_password_hash
+similar to Flask_bcrypt 
+
+
+request.get_json(force=True, silent=True) # advance
+request.json() 
+

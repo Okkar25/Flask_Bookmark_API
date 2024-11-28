@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, Blueprint
+from flask import Flask
 from flask_cors import CORS
 from waitress import serve
 from flask_migrate import Migrate
@@ -24,6 +24,7 @@ def create_app(test_config=None):
     db.app = app
     db.init_app(app)
 
+    # blueprints
     app.register_blueprint(auth)
     app.register_blueprint(bookmarks)
 
