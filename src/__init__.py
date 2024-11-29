@@ -5,9 +5,9 @@ from flask_migrate import Migrate
 from flask_restful import Resource, Api, marshal_with, fields
 import os
 from src.database import db
-from src.auth import auth
+from src.auth import auth, revoked_tokens
 from src.bookmarks import bookmarks
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import JWTManager, get_jwt
 from src.constants.http_status_codes import (
     HTTP_404_NOT_FOUND,
     HTTP_500_INTERNAL_SERVER_ERROR,
@@ -31,7 +31,17 @@ def create_app(test_config=None):
     db.app = app
     db.init_app(app)
 
-    JWTManager(app)
+    # token
+
+    # Initialize JWT
+    jwt = JWTManager(app)
+
+    # Add a callback to check if a token is revoked
+    @jwt.token_in_blocklist_loader
+    def check_if_token_revoked(jwt_header, jwt_payload):
+        jti = jwt_payload["jti"]
+        return jti in revoked_tokens
+
     # blueprints
     app.register_blueprint(auth)
     app.register_blueprint(bookmarks)

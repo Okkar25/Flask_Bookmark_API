@@ -14,9 +14,14 @@ from flask_jwt_extended import (
     create_refresh_token,
     jwt_required,
     get_jwt_identity,
+    get_jti,
+    get_jwt,
 )
 
+
 auth = Blueprint("auth", __name__, url_prefix="/api/v1/auth")
+
+revoked_tokens = set()  # In-memory token blacklist
 
 
 # @auth.route("/register", methods=["POST"])
@@ -134,3 +139,24 @@ def refresh_users_token():
     access = create_access_token(identity=identity)
 
     return jsonify({"access": access}), HTTP_200_OK
+
+
+@auth.post("/logout")
+@jwt_required()
+def logout():
+    jti = get_jwt()["jti"]
+    revoked_tokens.add(jti)  # Add the token to the blacklist
+
+    return jsonify({"message": "Successfully logged out"}), HTTP_200_OK
+
+
+@auth.post("/logout_all")
+@jwt_required()
+def logout_all():
+    user_id = get_jwt_identity()
+
+    for token in revoked_tokens.copy():
+        if token == user_id:
+            revoked_tokens.remove(token)
+
+    return jsonify({"message": "Logged out from all devices and sessions"}), HTTP_200_OK
