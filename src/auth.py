@@ -4,9 +4,17 @@ from src.constants.http_status_codes import (
     HTTP_400_BAD_REQUEST,
     HTTP_409_CONFLICT,
     HTTP_201_CREATED,
+    HTTP_401_UNAUTHORIZED,
+    HTTP_200_OK,
 )
 import validators
 from src.database import db, User
+from flask_jwt_extended import (
+    create_access_token,
+    create_refresh_token,
+    jwt_required,
+    get_jwt_identity,
+)
 
 auth = Blueprint("auth", __name__, url_prefix="/api/v1/auth")
 
@@ -64,6 +72,65 @@ def register():
     )
 
 
-@auth.route("/me", methods=["GET"])
+@auth.post("/login")
+def login():
+    email = request.json.get("email", "")
+    password = request.json.get("password", "")
+
+    user = User.query.filter_by(email=email).first()
+
+    if user:
+        is_correct_pwd = check_password_hash(user.password, password)
+
+        if is_correct_pwd:
+            # identity needs to be string # str(user.id) # get_jwt_identity()
+            access = create_access_token(identity=str(user.id))
+            refresh = create_refresh_token(identity=str(user.id))
+
+            return (
+                jsonify(
+                    {
+                        "user": {
+                            "refresh": refresh,
+                            "access": access,
+                            "email": user.email,
+                            "username": user.username,
+                        }
+                    }
+                ),
+                HTTP_200_OK,
+            )
+
+    return jsonify({"error": "Wrong Credentials"}), HTTP_401_UNAUTHORIZED
+
+
+# @auth.route("/me", methods=["GET"])
+# @auth.get("/user")
+@auth.get("/me")
+@jwt_required()
 def me():
-    return {"user": "me"}
+    user_id = get_jwt_identity()
+    user = User.query.filter_by(id=user_id).first()
+
+    if user:
+        return (
+            jsonify(
+                {
+                    "username": user.username,
+                    "email": user.email,
+                }
+            ),
+            HTTP_200_OK,
+        )
+
+    return jsonify({"error": "User not found"}), HTTP_400_BAD_REQUEST
+
+
+# @auth.post("/token/refresh")
+@auth.get("/token/refresh")
+@jwt_required(refresh=True)
+def refresh_users_token():
+    identity = get_jwt_identity()
+    access = create_access_token(identity=identity)
+
+    return jsonify({"access": access}), HTTP_200_OK

@@ -166,3 +166,43 @@ similar to Flask_bcrypt
 request.get_json(force=True, silent=True) # advance
 request.json() 
 
+
+SQLALCHEMY_TRACK_MODIFICATIONS
+
+
+
+Example Workflow
+
+    Login:
+        User provides credentials.
+        Server validates them and issues an access token (short-lived) and a refresh token (long-lived).
+
+    API Access:
+        Client includes the access token in API requests to protected routes.
+
+    Access Token Expiration:
+        When the access token expires, the client uses the refresh token to obtain a new access token from the server.
+
+    Logout:
+        Refresh token is invalidated, and both tokens become unusable.
+
+
+Access Token
+- Authorize API requests
+- Short-lived
+- Memory or cookie
+
+
+Refresh Token
+- Renew access tokens
+- Long-lived
+- HTTP-only cookie
+
+
+bobby9736@gmail.com
+bob123
+
+import pdb
+pdb.set_trace()
+
+get_jwt_identity()
